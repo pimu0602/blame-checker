@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="文章に含まれる他責・言い訳に見えやすい表現を見つけ、改善型の言い換えを提案します。">
+  <title>他責チェッカー</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="page-shell">
+    <header class="hero">
+      <div class="brand-mark" aria-hidden="true">責</div>
+      <div>
+        <p class="eyebrow">BLAME CHECKER</p>
+        <h1>他責チェッカー</h1>
+        <p class="lead">その文章、理由で終わっていませんか？<br>伝わり方を整えて、次の行動まで言葉にします。</p>
+      </div>
+    </header>
+
+    <main>
+      <section class="panel input-panel" aria-labelledby="input-title">
+        <div class="section-heading">
+          <div>
+            <p class="step">01 / INPUT</p>
+            <h2 id="input-title">チェックする文章</h2>
+          </div>
+          <span id="char-count" class="char-count">0 / 1,000</span>
+        </div>
+
+        <label class="sr-only" for="source-text">チェックする文章</label>
+        <textarea id="source-text" maxlength="1000" placeholder="例：上司がちゃんと教えてくれなかったので、できませんでした。"></textarea>
+
+        <div class="settings-grid">
+          <fieldset>
+            <legend>用途</legend>
+            <label class="select-wrap">
+              <select id="purpose">
+                <option value="all">全部対応</option>
+                <option value="work">仕事の報告、日報</option>
+                <option value="sns">SNS投稿前チェック</option>
+                <option value="message">LINE、メッセージ</option>
+                <option value="thought">自分の思考整理</option>
+              </select>
+            </label>
+          </fieldset>
+
+          <fieldset>
+            <legend>判定トーン</legend>
+            <div class="tone-group" role="radiogroup" aria-label="判定トーン">
+              <label><input type="radio" name="tone" value="gentle"><span>やさしめ</span></label>
+              <label><input type="radio" name="tone" value="normal" checked><span>普通</span></label>
+              <label><input type="radio" name="tone" value="strict"><span>厳しめ</span></label>
+              <label class="oni-choice"><input type="radio" name="tone" value="oni"><span>👹 鬼</span></label>
+            </div>
+          </fieldset>
+        </div>
+
+        <div class="actions">
+          <button id="check-button" class="button primary" type="button"><span>文章を判定する</span><span aria-hidden="true">→</span></button>
+          <button id="clear-button" class="button secondary" type="button">クリア</button>
+        </div>
+        <p id="input-error" class="input-error" role="alert" hidden>文章を入力してから判定してください。</p>
+      </section>
+
+      <section id="results" class="results" aria-live="polite" hidden>
+        <div class="result-topline">
+          <div>
+            <p class="step">02 / RESULT</p>
+            <h2>判定結果</h2>
+          </div>
+          <span id="oni-badge" class="oni-badge" hidden>👹 鬼モード</span>
+        </div>
+
+        <article id="score-card" class="panel score-card">
+          <div class="score-main">
+            <div>
+              <p class="result-label">他責度</p>
+              <div class="level-row"><strong id="level">低</strong><span id="score">0点</span></div>
+            </div>
+            <div class="meter" aria-hidden="true"><span id="meter-fill"></span></div>
+          </div>
+          <p id="tone-message" class="tone-message"></p>
+        </article>
+
+        <div class="result-grid">
+          <article class="panel detail-card type-card">
+            <p class="card-kicker">TYPE</p>
+            <h3>あなたの文章の他責タイプ</h3>
+            <p id="type-name" class="type-name">該当なし</p>
+            <p id="reason" class="reason"></p>
+          </article>
+
+          <article class="panel detail-card">
+            <p class="card-kicker">DETECTED</p>
+            <h3>検出ワード</h3>
+            <div id="detected-words" class="word-list"></div>
+          </article>
+        </div>
+
+        <article class="panel rewrite-card">
+          <div class="card-title-row">
+            <div>
+              <p class="card-kicker">REWRITE</p>
+              <h3>自責・改善型の言い換え</h3>
+            </div>
+            <button id="copy-button" class="copy-button" type="button"><span aria-hidden="true">□</span> コピー</button>
+          </div>
+          <p id="rewrite-text" class="rewrite-text"></p>
+          <p id="copy-status" class="copy-status" role="status"></p>
+        </article>
+
+        <article class="panel next-card">
+          <p class="card-kicker">NEXT ACTION</p>
+          <h3>次の一手</h3>
+          <ul id="next-actions"></ul>
+        </article>
+      </section>
+    </main>
+
+    <footer><p>文章を責めず、行動に変える。入力内容は保存・送信されません。</p></footer>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
