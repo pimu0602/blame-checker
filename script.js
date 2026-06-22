@@ -28,11 +28,37 @@ const blameDictionary = [
     name: '外部要因タイプ',
     words: [
       ['上司が', /上司が/g], ['会社が', /会社が/g], ['相手が', /相手が/g],
-      ['周りが', /周りが/g], ['環境が', /環境が/g], ['あの人が', /あの人が/g]
+      ['周りが', /周りが/g], ['環境が', /環境が(?!悪い)/g], ['あの人が', /あの人が/g]
     ],
     reason: '相手や環境の行動が原因の中心になっていて、自分が変えられる範囲が見えにくい文章です。',
     rewrite: '外部の状況を踏まえた準備と働きかけが不足していました。\n次回からは自分で確認できる範囲を整理し、必要な依頼や相談を早めに行います。',
     actions: ['自分で変えられる範囲を分ける', '必要な依頼を具体的に伝える', '事実と自分の対応を分けて書く']
+  },
+  {
+    name: '環境要因タイプ',
+    words: [
+      ['雨のせい', /雨のせい/g],
+      ['天気のせい', /天気のせい/g],
+      ['雨', /雨(?!のせい)/g],
+      ['天気', /天気(?!のせい)/g],
+      ['天候', /天候/g],
+      ['暑い', /暑(?:い|かった|くて)/g],
+      ['寒い', /寒(?:い|かった|くて)/g],
+      ['外が', /外が/g],
+      ['場所がない', /場所がな(?:い|かった)/g],
+      ['環境が悪い', /環境が悪(?:い|かった|くて)/g],
+      ['予定が崩れた', /予定が崩れ(?:た|て)/g]
+    ],
+    bonusWords: [
+      ['無理', /無理(?:です|だった|でした)?/g],
+      ['できない', /でき(?:なくなった|なくて|ませんでした|なかった|ません|ない)/g],
+      ['仕方ない', /仕方(?:が)?な(?:い|かった)/g],
+      ['やめた', /やめた/g],
+      ['続かなかった', /続かなかった/g]
+    ],
+    reason: '天候や環境を理由にしていて、代替行動が見えにくい表現です。',
+    rewrite: '雨で予定通りのランニングはできませんでしたが、室内でできる運動に切り替えるなど、継続する方法を考えます。',
+    actions: ['できない条件でも続けられる代替案を用意する']
   },
   {
     name: '諦めタイプ',
@@ -106,6 +132,13 @@ function analyze(text) {
       const matches = text.match(pattern);
       if (matches) found.push({ label, display: matches[0], weight });
     });
+    if (found.length && category.bonusWords) {
+      const bonusMatches = category.bonusWords.flatMap(([label, pattern]) => {
+        const matches = text.match(pattern);
+        return matches ? [{ label, display: matches[0] }] : [];
+      });
+      bonusMatches.forEach((item, index) => found.push({ ...item, weight: index === 0 ? 1 : 0 }));
+    }
     return { ...category, found, score: found.reduce((sum, item) => sum + item.weight, 0) };
   });
   const score = categories.reduce((sum, item) => sum + item.score, 0);
