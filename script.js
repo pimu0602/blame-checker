@@ -141,7 +141,16 @@ function analyze(text) {
     }
     return { ...category, found, score: found.reduce((sum, item) => sum + item.weight, 0) };
   });
-  const score = categories.reduce((sum, item) => sum + item.score, 0);
+  // 同じ語が複数タイプに登録されていても(例:「できない」「無理」)、
+  // 合計スコアでは1回だけ最大の重みでカウントする
+  const uniqueWeights = new Map();
+  categories.forEach(category => {
+    category.found.forEach(item => {
+      const current = uniqueWeights.get(item.label) ?? 0;
+      uniqueWeights.set(item.label, Math.max(current, item.weight));
+    });
+  });
+  const score = [...uniqueWeights.values()].reduce((sum, weight) => sum + weight, 0);
   const dominant = [...categories].sort((a, b) => b.score - a.score)[0];
   return { score, categories, dominant: dominant.score ? dominant : null };
 }
